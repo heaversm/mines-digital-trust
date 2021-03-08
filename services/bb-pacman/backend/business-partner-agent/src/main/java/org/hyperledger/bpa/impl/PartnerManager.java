@@ -106,7 +106,7 @@ public class PartnerManager {
                 .setState("requested");
         Partner result = repo.save(partner); // save before creating the connection
         if (did.startsWith(ledgerPrefix) && lookupP.getAriesSupport()) {
-            //wrong did
+            // wrong did
             cm.createConnection(did, connectionLabel, alias);
             credLookup.lookupTypesForAllPartnersAsync();
         } else if (lookupP.getAriesSupport()) {

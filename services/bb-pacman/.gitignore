@@ -82,3 +82,7 @@ package-lock.json
 charts/**/charts/
 charts/**/manifests/
 my-values.yaml
+
+scripts/local-development/**/acapy-static-args.yml
+scripts/local-development/**/*.txn
+

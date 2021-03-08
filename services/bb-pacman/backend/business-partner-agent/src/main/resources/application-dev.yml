@@ -1,3 +1,9 @@
 micronaut:
   security:
     enabled: false
+  router:
+    # note also check the AppController
+    static-resources:
+      frontend:
+        paths: file:/Users/jason/Projects/parc-jason/mines-digital-trust/services/bb-pacman/frontend/dist
+        mapping: /**
