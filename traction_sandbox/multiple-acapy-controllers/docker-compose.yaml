@@ -2,7 +2,7 @@ version: "3.9"
 services:
   verifier:
     build:
-      context: service1
+      context: verifier
       dockerfile: Dockerfile
     depends_on:
       - traction-agent
@@ -12,7 +12,7 @@ services:
      - host.docker.internal:host-gateway
   holder:
     build:
-      context: service2
+      context: holder
       dockerfile: Dockerfile
     depends_on:
       - traction-agent
