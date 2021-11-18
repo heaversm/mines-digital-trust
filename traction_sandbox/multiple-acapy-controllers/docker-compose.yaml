@@ -1,0 +1,74 @@
+version: "3.9"
+services:
+  verifier:
+    build:
+      context: service1
+      dockerfile: Dockerfile
+    depends_on:
+      - traction-agent
+    ports:
+      - ${VERIFIER_SERVICE_PORT}:5000
+    extra_hosts:
+     - host.docker.internal:host-gateway
+  holder:
+    build:
+      context: service2
+      dockerfile: Dockerfile
+    depends_on:
+      - traction-agent
+    environment:
+      - POSTGRES_USER=${POSTGRESQL_USER}
+      - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
+    ports:
+      - ${HOLDER_SERVICE_PORT}:5000
+    extra_hosts:
+     - host.docker.internal:host-gateway
+  
+  traction-agent:
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.2
+    depends_on:
+      - traction-wallet
+    ports:
+      - ${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}
+      - ${ACAPY_HTTP_PORT}:${ACAPY_HTTP_PORT}
+    entrypoint: /bin/bash
+    command: [
+        "-c",
+        "sleep 5;
+        aca-py start \
+        --auto-provision
+        --arg-file acapy-static-args.yml \
+        --inbound-transport http '0.0.0.0' ${ACAPY_HTTP_PORT} \
+        --webhook-url http://service_1:5000/log \
+        --webhook-url http://service_2:5000/log \
+        --genesis-url '${ACAPY_GENESIS_URL}' \
+        --endpoint ${ACAPY_ENDPOINT} \
+        --wallet-name '${ACAPY_WALLET_DATABASE}' \
+        --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \
+        --wallet-storage-type '${ACAPY_WALLET_TYPE}' \
+        --wallet-storage-config '{\"url\":\"${POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
+        --wallet-storage-creds '{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}' \
+        --wallet-name mastet_wallet \
+        --admin '0.0.0.0' ${ACAPY_ADMIN_PORT} \
+        --label '${AGENT_NAME}' \
+        ${ACAPY_ADMIN_CONFIG} \
+        ${ACAPY_READ_ONLY_MODE} \
+        ${ACAPY_TAILS_BASE_URL} \       
+        ${ACAPY_TAILS_UPLOAD_URL} \   
+        "
+    ]
+    volumes:
+      - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
+    extra_hosts:
+     - host.docker.internal:host-gateway
+  traction-wallet:
+    image: "postgres:12-alpine"
+    environment:
+      - POSTGRES_USER=${POSTGRESQL_USER}
+      - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
+    ports:
+      - ${POSTGRESQL_PORT}:5432
+    volumes:
+      - traction-wallet:/var/lib/postgresql/data
+volumes:
+  traction-wallet:
