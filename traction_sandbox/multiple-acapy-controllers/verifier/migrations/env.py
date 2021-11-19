@@ -15,7 +15,7 @@ config = context.config
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
 logger = logging.getLogger('alembic.env')
-
+schema_name = config.get_main_option('verifier')
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
@@ -30,6 +30,12 @@ target_metadata = current_app.extensions['migrate'].db.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
+def include_object(object, name, type_, reflected, compare_to):
+    if type_ == "table" and object.schema != "verifier":
+        return False
+    else:
+        return True
 
 
 def run_migrations_offline():
@@ -78,6 +84,9 @@ def run_migrations_online():
             connection=connection,
             target_metadata=target_metadata,
             process_revision_directives=process_revision_directives,
+            version_table_schema='verifier',
+            include_schemas=True,
+            include_object=include_object,
             **current_app.extensions['migrate'].configure_args
         )
 

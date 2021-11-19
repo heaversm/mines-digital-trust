@@ -9,8 +9,9 @@ services:
     environment:
       - POSTGRESQL_HOST=${POSTGRESQL_HOST}
       - POSTGRESQL_PORT=${POSTGRESQL_PORT}
-      - POSTGRESQL_USER=${POSTGRESQL_USER}
-      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+      - POSTGRESQL_DB=${VERIFIER_PSQL_DB}
+      - POSTGRESQL_USER=${VERIFIER_PSQL_USER}
+      - POSTGRESQL_PASSWORD=${VERIFIER_PSQL_PASS}
     ports:
       - ${VERIFIER_SERVICE_PORT}:5000
     extra_hosts:
@@ -25,9 +26,10 @@ services:
       - traction-agent
     environment:
       - POSTGRESQL_HOST=${POSTGRESQL_HOST}
-      - POSTGRESQL_PORT=${POSTGRESQL_PORT}
-      - POSTGRESQL_USER=${POSTGRESQL_USER}
-      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+      - POSTGRESQL_PORT=${POSTGRESQL_PORT}      
+      - POSTGRESQL_DB=${HOLDER_PSQL_DB}
+      - POSTGRESQL_USER=${HOLDER_PSQL_USER}
+      - POSTGRESQL_PASSWORD=${HOLDER_PSQL_PASS}
     ports:
       - ${HOLDER_SERVICE_PORT}:5000
     extra_hosts:
@@ -58,7 +60,7 @@ services:
         --wallet-storage-type '${ACAPY_WALLET_TYPE}' \
         --wallet-storage-config '{\"url\":\"${POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
         --wallet-storage-creds '{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}' \
-        --wallet-name mastet_wallet \
+        --wallet-name traction-wallet  \
         --admin '0.0.0.0' ${ACAPY_ADMIN_PORT} \
         --label '${AGENT_NAME}' \
         ${ACAPY_ADMIN_CONFIG} \

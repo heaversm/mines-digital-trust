@@ -36,9 +36,12 @@ def acapy_event_handler(topic):
 
 class Event(db.Model):
     __tablename__ = 'events'
+    __table_args__ = { "schema": 'verifier' }
+
     id = db.Column(db.Integer,primary_key=True)
     topic = db.Column(db.String(100), nullable=False)
     event_raw = db.Column(db.String, nullable=False)
 
     def __repr__(self):
         return '<Event %r:%r>' % self.id, self.topic
+        
